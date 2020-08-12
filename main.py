@@ -1,6 +1,16 @@
 from __future__ import print_function
 import mysql.connector  # https://www.w3schools.com/python/python_mysql_insert.asp
 # https://support.rackspace.com/how-to/install-mysql-server-on-the-ubuntu-operating-system/ # command line mySQL
+# https://mediatemple.net/community/products/dv/204404494/how-do-i-grant-privileges-in-mysql # PRIVILEGES
+
+
+# CREATE TABLE `imu_data`.`test_table` (
+#   `idtestTable2` INT NOT NULL,
+#   `accel_x` INT NULL,
+#   `accel_y` INT NULL,
+#   `time_entry` TIMESTAMP(3) NULL,
+#   PRIMARY KEY (`idtestTable2`));
+
     #  Show users : SELECT User, Host, authentication_string FROM mysql.user;
     # Show databases: SHOW DATABASES;
     # Add user: INSERT INTO mysql.user (User,Host,authentication_string,ssl_cipher,x509_issuer,x509_subject) VALUES('rrai','%',PASSWORD('redrock1234'),'','','');
