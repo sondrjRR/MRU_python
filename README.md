@@ -63,3 +63,9 @@ Then install sql-connector-python with a pip install
 Indent with markdown:
 
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    
+## Sources:
+ [python mysql insert](https://www.w3schools.com/python/python_mysql_insert.asp) <br/>
+ [mySQL terminal command lines](https://support.rackspace.com/how-to/install-mysql-server-on-the-ubuntu-operating-system/) <br/> 
+ [SQL role PRIVILEGES](https://mediatemple.net/community/products/dv/204404494/how-do-i-grant-privileges-in-mysql) <br/>
+ [python matlibplot Plot with timestamp](https://stackoverflow.com/questions/1574088/plotting-time-in-python-with-matplotlib/16428019) <br/>
