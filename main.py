@@ -83,8 +83,8 @@ for step in range(10):
     #                                                                                                    mX, mY, mZ, timeRead))
 
 
-    # time.sleep((poll_interval) * 1.0 / 1000.0)
-    time.sleep(100/1000)
+    time.sleep((poll_interval) * 1.0 / 1000.0)
+    # time.sleep(100/1000)
     # a_array = np.array([aX, aY, aZ])
     # g_array = np.array([gX, gY, gZ])
     # m_array = np.array([mX, mY, mZ])
