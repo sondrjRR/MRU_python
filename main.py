@@ -12,6 +12,29 @@ from AHRS import quaternions
 import numpy as np
 from datetime import date, datetime, timedelta
 
+
+def queryBufferList(sql_string, data):
+
+    try:
+        time_start = time.time()
+        cursor.executemany(sql_string, data)
+        cnx.commit()
+        time_ms = (time.time() - time_start) * 1000
+        print(" - Query completed \n - Time for query was: ", time_ms, "\n")
+
+    except mysql.connector.errors.OperationalError as e:
+        print("Error code:", e.errno)  # error number
+        print("SQLSTATE value:", e.sqlstate)  # SQLSTATE value
+        print("Error message:", e.msg)  # error message
+        print ("Error:", e)  # errno, sqlstate, msg values
+        s = str(e)
+        print("Error:", s)  # errno, sqlstate, msg values
+
+    # sqlThread.join()
+
+
+#################################################################################################################
+# SQL connection # ##############################################################################################
 HOST = "127.0.0.1"
 # HOST = "192.168.1.130"
 PORT = 3306
@@ -19,134 +42,82 @@ DATABASE = "data_db"
 USER = "rrai"
 PASSWORD = "redrock1234"
 print("Hello, world!")
-
 cnx = mysql.connector.connect(user=USER, password=PASSWORD, host=HOST, database=DATABASE, port=PORT)
-
-timeRead = datetime.utcnow()
-print("Time read is: ", timeRead)
 cursor = cnx.cursor()
+#################################################################################################################
+#################################################################################################################
 
+#################################################################################################################
+# IMU setup # ###################################################################################################
 SETTINGS_FILE = "IMU_config"
 
 print("Using settings file " + SETTINGS_FILE + ".ini")
 if not os.path.exists(SETTINGS_FILE + ".ini"):
     print("Settings file does not exist, will be created")
-
 s = RTIMU.Settings(SETTINGS_FILE)
 imu = RTIMU.RTIMU(s)
-
 print("IMU Name: " + imu.IMUName())
-
 if not imu.IMUInit():
     print("IMU Init Failed")
     sys.exit(1)
 else:
     print("IMU Init Succeeded")
-
 # this is a good time to set any fusion parameters
 # imu.setSlerpPower(0.02)
 imu.setGyroEnable(True)
 imu.setAccelEnable(True)
 imu.setCompassEnable(True)
-
 poll_interval = imu.IMUGetPollInterval()
 print("Recommended Poll Interval: %dmS\n" % poll_interval)
-
 AHRS = madgwick.MadgwickAHRS()
-x = []
-t = [None]*10
-for step in range(10):
+#################################################################################################################
+#################################################################################################################
+
+aX = 0.1
+aY = 0.2
+aZ = 0.3
+
+gX = 0.4
+gY = 0.5
+gZ = 0.6
+
+mX = 0.7
+mY = 0.8
+mZ = 0.9
+
+
+imu_data = "INSERT INTO `data_db`.`imu_data` (`time_entry`, `accel_x`, `accel_y`, `accel_z`, `gyro_x`, `gyro_y`, `gyro_z`, `mag_x`, `mag_y`, `mag_z`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+listSize = 50
+# listSize = 150
+xList = [None]*listSize  # Pre-allocating memory
+count = 0
+i = 0
+thCount = 0
+sqlThread = threading.Thread()
+sqlThreadBackup = threading.Thread()
+BackUp = False
+
+while count <= 100000:
     timeRead = datetime.utcnow()
-    t[step] = timeRead
-    imu.IMURead()
+    count = count + 1
+    if i == listSize:
+        i = 0
+    xList[i] = (timeRead, aX, aY, aZ, gX, gY, gZ, mX, mY, mZ)
+    if count % listSize == 0 and count != 0:
+        print("Active threads are: ", threading.active_count())
+        # if threading.active_count() >= 1 and sqlThread.is_alive():
+        #     sqlThreadBackup = threading.Thread(target=queryBufferList, args=(imu_data, xList,), daemon=True)
+        #     sqlThreadBackup.start()
+        if sqlThread.is_alive():
+            sqlThread.join()
+        sqlThread = threading.Thread(target=queryBufferList, args=(imu_data, xList,), daemon=True)
+        sqlThread.start()
 
-    # accelData = imu.getAccel()
-    aX = round(imu.getAccel()[0], 4)  # accelData[0]
-    aY = round(imu.getAccel()[1], 4)  # accelData[1]
-    aZ = round(imu.getAccel()[2], 4)  # accelData[2]
-    x.append(aX)
-    # print("aX: %f aY: %f aZ: %f" % (aX, aY, aZ))
+    i = i + 1
+    # time.sleep(0.004)
+    # time.sleep(0.0005)
 
-    # gyroData = imu.getGyro()
-    gX = round(imu.getGyro()[0], 4)
-    gY = round(imu.getGyro()[1], 4)
-    gZ = round(imu.getGyro()[2], 4)
-    # print("gX: %f gY: %f gZ: %f" % (gX, gY, gZ))
-
-    # magData = imu.getCompass()
-    mX = round(imu.getCompass()[0], 4)
-    mY = round(imu.getCompass()[1], 4)
-    mZ = round(imu.getCompass()[2], 4)
-    # print("mX: %f mY: %f mZ: %f" % (mX, mY, mZ))
-
-    # print("(aX: %f aY: %f aZ: %f) : (gX: %f gY: %f gZ: %f) : (mX: %f mY: %f mZ: %f) - at TIME: %s " % (aX, aY, aZ, gX, gY, gZ,
-    #                                                                                                    mX, mY, mZ, timeRead))
-
-
-    time.sleep((poll_interval) * 1.0 / 1000.0)
-    # time.sleep(100/1000)
-    # a_array = np.array([aX, aY, aZ])
-    # g_array = np.array([gX, gY, gZ])
-    # m_array = np.array([mX, mY, mZ])
-    # AHRS.update(g_array, a_array, m_array)
-    # print(AHRS)
-for i in t:
-    imu_data = "INSERT INTO `data_db`.`imu_data` (`time_entry`, `accel_x`, `accel_y`, `accel_z`, `gyro_x`, `gyro_y`, `gyro_z`, `mag_x`, `mag_y`, `mag_z`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    mellom = i
-    val = (i, aX, aY, aZ, gX, gY, gZ, mX, mY, mZ)
-    start_time = time.time()
-    # print(i)
-    cursor.execute(imu_data, val)
-    cnx.commit()
-    # ms_time = round((time.time() - start_time) * 1000, 4)
-    # print("--- %s[ms] mySQL exectuion time---" % ms_time)
-
-    # time.sleep(poll_interval * 1.0 / 1000.0)
-    # madgwick.MadgwickAHRS.update(imu.getAccel(), imu.getGyro(), imu.getCompass())
 
 cursor.close()
 cnx.close()
-count = 0
-start_time = time.time()
-while (count < 100):
-    imu.IMURead()
-    count = count + 1
-
-ms_time = round((time.time() - start_time) * 10, 4)
-print("--- %s[ms]  time avg---" % ms_time)
-
-# sudo systemctl set-default multi-user.target
-# sudo systemctl set-default graphical.target
-
-
-# while True:
-#     if imu.IMURead():
-#
-#         # accelData = imu.getAccel()
-#         aX = round(imu.getAccel()[0], 4)  # accelData[0]
-#         aY = round(imu.getAccel()[1], 4)  # accelData[1]
-#         aZ = round(imu.getAccel()[2], 4)  # accelData[2]
-#         # print("aX: %f aY: %f aZ: %f" % (aX, aY, aZ))
-#
-#         # gyroData = imu.getGyro()
-#         gX = round(imu.getGyro()[0], 4)
-#         gY = round(imu.getGyro()[1], 4)
-#         gZ = round(imu.getGyro()[2], 4)
-#         # print("gX: %f gY: %f gZ: %f" % (gX, gY, gZ))
-#
-#         # magData = imu.getCompass()
-#         mX = round(imu.getCompass()[0], 4)
-#         mY = round(imu.getCompass()[1], 4)
-#         mZ = round(imu.getCompass()[2], 4)
-#         # print("mX: %f mY: %f mZ: %f" % (mX, mY, mZ))
-#
-#         # print("(aX: %f aY: %f aZ: %f) : (gX: %f gY: %f gZ: %f) : (mX: %f mY: %f mZ: %f) " % (aX, aY, aZ, gX, gY, gZ,
-#         #                                                                                          mX, mY, mZ))
-#
-#         a_array = np.array([aX, aY, aZ])
-#         g_array = np.array([gX, gY, gZ])
-#         m_array = np.array([mX, mY, mZ])
-#         AHRS.update(g_array, a_array, m_array)
-#         print(AHRS)
-#         time.sleep(poll_interval * 1.0 / 1000.0)
-#

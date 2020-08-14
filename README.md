@@ -69,3 +69,9 @@ Indent with markdown:
  [mySQL terminal command lines](https://support.rackspace.com/how-to/install-mysql-server-on-the-ubuntu-operating-system/) <br/> 
  [SQL role PRIVILEGES](https://mediatemple.net/community/products/dv/204404494/how-do-i-grant-privileges-in-mysql) <br/>
  [python matlibplot Plot with timestamp](https://stackoverflow.com/questions/1574088/plotting-time-in-python-with-matplotlib/16428019) <br/>
+ [UR gripper](https://dof.robotiq.com/discussion/1649/control-gripper-via-ur-controller-client-interface) <br/>
+ [UR ROS-driver](https://www.universal-robots.com/articles/ur/universal-robots-ros-driver/) <br/>
+ [UR ROS python "urx"](https://github.com/SintefManufacturing/python-urx) <br/>
+ [UR python real time face tracking](https://github.com/robin-gdwl/UR_Facetracking/tree/master/URBasic) <br/>
+ [UR python socket](http://www.zacobria.com/universal-robots-zacobria-forum-hints-tips-how-to/script-via-socket-connection/) <br/>
+ [Python Ros URSim](https://www.youtube.com/watch?v=xMEAML557HE)
