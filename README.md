@@ -67,10 +67,10 @@ If a quary of a single value is wanted as in for example:
 The value passed has to be made into a tuple, as shown below:
 
     data = 1
-    cursor.executemany(sql_string, (data, ))
+    cursor.execute(sql_string, (data, ))
 Instead of
     
-    cursor.executemany(sql_string, data)
+    cursor.execute(sql_string, data)
 
 Indent with markdown:
 
