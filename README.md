@@ -60,6 +60,18 @@ Then install sql-connector-python with a pip install
     GRANT SUPER ON *.* TO rrai@'%'; (Not sure if this one is neccesray)
     UPDATE mysql.user SET Super_Priv='Y' WHERE user='rrai' AND host='%'; (Not sure if this one is neccessary)
 
+#### Exectuing with a single value
+If a quary of a single value is wanted as in for example:
+    
+    # sql_string = "INSERT INTO `test`.`time_test_table` (`TimeStamp_e`) VALUES (%s)"
+The value passed has to be made into a tuple, as shown below:
+
+    data = 1
+    cursor.execute(sql_string, (data, ))
+Instead of
+    
+    cursor.execute(sql_string, data)
+
 Indent with markdown:
 
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
