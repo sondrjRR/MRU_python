@@ -57,7 +57,7 @@ mZ = 0.9
 
 imu_data = "INSERT INTO `data_db`.`imu_data` (`time_entry`, `accel_x`, `accel_y`, `accel_z`, `gyro_x`, `gyro_y`, `gyro_z`, `mag_x`, `mag_y`, `mag_z`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-listSize = 50
+listSize = 500
 # listSize = 150
 xList = [None]*listSize  # Pre-allocating memory
 count = 0

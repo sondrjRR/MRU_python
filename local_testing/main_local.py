@@ -39,8 +39,8 @@ def queryBufferList(sql_string, data):
 HOST = "127.0.0.1"
 # HOST = "192.168.1.130"
 PORT = 3306
-DATABASE = "data_db"
-USER = "rrai"
+DATABASE = "test"
+USER = "test_user"
 PASSWORD = "redrock1234"
 print("Hello, world!")
 cnx = mysql.connector.connect(user=USER, password=PASSWORD, host=HOST, database=DATABASE, port=PORT)
@@ -50,27 +50,27 @@ cursor = cnx.cursor()
 
 #################################################################################################################
 # IMU setup # ###################################################################################################
-SETTINGS_FILE = "IMU_config"
-
-print("Using settings file " + SETTINGS_FILE + ".ini")
-if not os.path.exists(SETTINGS_FILE + ".ini"):
-    print("Settings file does not exist, will be created")
-s = RTIMU.Settings(SETTINGS_FILE)
-imu = RTIMU.RTIMU(s)
-print("IMU Name: " + imu.IMUName())
-if not imu.IMUInit():
-    print("IMU Init Failed")
-    sys.exit(1)
-else:
-    print("IMU Init Succeeded")
-# this is a good time to set any fusion parameters
-# imu.setSlerpPower(0.02)
-imu.setGyroEnable(True)
-imu.setAccelEnable(True)
-imu.setCompassEnable(True)
-poll_interval = imu.IMUGetPollInterval()
-print("Recommended Poll Interval: %dmS\n" % poll_interval)
-AHRS = madgwick.MadgwickAHRS()
+# SETTINGS_FILE = "IMU_config"
+#
+# print("Using settings file " + SETTINGS_FILE + ".ini")
+# if not os.path.exists(SETTINGS_FILE + ".ini"):
+#     print("Settings file does not exist, will be created")
+# s = RTIMU.Settings(SETTINGS_FILE)
+# imu = RTIMU.RTIMU(s)
+# print("IMU Name: " + imu.IMUName())
+# if not imu.IMUInit():
+#     print("IMU Init Failed")
+#     sys.exit(1)
+# else:
+#     print("IMU Init Succeeded")
+# # this is a good time to set any fusion parameters
+# # imu.setSlerpPower(0.02)
+# imu.setGyroEnable(True)
+# imu.setAccelEnable(True)
+# imu.setCompassEnable(True)
+# poll_interval = imu.IMUGetPollInterval()
+# print("Recommended Poll Interval: %dmS\n" % poll_interval)
+# AHRS = madgwick.MadgwickAHRS()
 #################################################################################################################
 #################################################################################################################
 
@@ -87,7 +87,7 @@ mY = 0.8
 mZ = 0.9
 
 
-imu_data = "INSERT INTO `data_db`.`imu_data` (`time_entry`, `accel_x`, `accel_y`, `accel_z`, `gyro_x`, `gyro_y`, `gyro_z`, `mag_x`, `mag_y`, `mag_z`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+imu_data = "INSERT INTO `test`.`imu_data` (`time_entry`, `accel_x`, `accel_y`, `accel_z`, `gyro_x`, `gyro_y`, `gyro_z`, `mag_x`, `mag_y`, `mag_z`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
 listSize = 50
 # listSize = 150
